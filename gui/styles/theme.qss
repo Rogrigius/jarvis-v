@@ -1,0 +1,82 @@
+/* JARVIS Futuristic Theme */
+
+QMainWindow {
+    background-color: #050a0f;
+    border: 1px solid #00f2ff;
+}
+
+QWidget {
+    color: #00f2ff;
+    font-family: 'Segoe UI', sans-serif;
+    background: transparent;
+}
+
+/* Sidebar */
+#Sidebar {
+    background-color: rgba(10, 20, 30, 220);
+    border-right: 2px solid #00f2ff;
+    min-width: 70px;
+}
+
+QPushButton#SidebarButton {
+    background: transparent;
+    border: none;
+    padding: 15px;
+    font-size: 18px;
+    border-left: 3px solid transparent;
+}
+
+QPushButton#SidebarButton:hover {
+    background-color: rgba(0, 242, 255, 30);
+}
+
+QPushButton#SidebarButton[active="true"] {
+    border-left: 3px solid #00f2ff;
+    background-color: rgba(0, 242, 255, 50);
+}
+
+/* Content Area */
+#ContentArea {
+    background-color: rgba(5, 10, 15, 200);
+}
+
+QLabel#StatusLabel {
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+QTextEdit#LogView {
+    background-color: rgba(10, 20, 30, 150);
+    border: 1px solid rgba(0, 242, 255, 100);
+    border-radius: 5px;
+    color: #00f2ff;
+    padding: 10px;
+}
+
+/* HUD elements */
+QFrame#HUDPanel {
+    background-color: rgba(0, 242, 255, 10);
+    border: 1px solid rgba(0, 242, 255, 50);
+    border-radius: 10px;
+}
+
+/* Scrollbars */
+QScrollBar:vertical {
+    border: none;
+    background: rgba(10, 20, 30, 0);
+    width: 8px;
+    margin: 0px;
+}
+
+QScrollBar::handle:vertical {
+    background: #00f2ff;
+    min-height: 20px;
+    border-radius: 4px;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    border: none;
+    background: none;
+}

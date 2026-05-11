@@ -25,6 +25,21 @@ class DatabaseManager:
                         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                     )
                 """)
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS custom_commands (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT,
+                        category TEXT,
+                        data JSON,
+                        enabled INTEGER DEFAULT 1
+                    )
+                """)
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS settings (
+                        key TEXT PRIMARY KEY,
+                        value TEXT
+                    )
+                """)
                 conn.commit()
             logger.info("Database initialized")
         except Exception as e:

@@ -31,7 +31,7 @@ class VoiceListener:
         )
 
         self._is_active = False
-        self._loop = None
+        self.main_loop = None
 
     def start(self):
         """Starts the voice listening process."""
@@ -50,10 +50,6 @@ class VoiceListener:
 
     def _processing_loop(self):
         """Continuously processes audio chunks and detects speech/wake-words."""
-        # Create a new event loop for this thread to handle async emitting
-        self._loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self._loop)
-
         for chunk in self.audio_manager.get_audio_chunks():
             if not self._is_active:
                 break
@@ -70,11 +66,12 @@ class VoiceListener:
                         self._emit_command(clean_text)
                     else:
                         # Just the wake word, maybe JARVIS should say "Yes?"
+                        # For now, we emit the original text so command manager can handle it
                         self._emit_event(EventType.COMMAND_DETECTED, {"text": text})
                 else:
-                    # Not a wake word, but we might still want to show it in the UI
-                    # or handle context-aware follow-up commands
-                    self._emit_event(EventType.COMMAND_DETECTED, {"text": text})
+                    # Not a wake word, we ignore it for command execution
+                    # but we could emit a non-command event for UI visualization if needed
+                    logger.debug(f"Ignoring speech without wake word: {text}")
 
             # Partial results for UI feedback
             partial = self.recognizer.get_partial()
@@ -88,9 +85,8 @@ class VoiceListener:
 
     def _emit_event(self, event_type: EventType, data: dict):
         """Helper to emit events asynchronously from the processing thread."""
-        if self._loop:
-            future = asyncio.run_coroutine_threadsafe(
+        if self.main_loop:
+            asyncio.run_coroutine_threadsafe(
                 self.event_bus.emit(Event(event_type, data, "VoiceListener")),
-                self._loop
+                self.main_loop
             )
-            # We don't necessarily wait for the result to keep the loop fast

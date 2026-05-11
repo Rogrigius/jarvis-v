@@ -5,11 +5,13 @@ from PyQt6.QtWidgets import QApplication
 from core.event_bus import event_bus
 from core.config_manager import ConfigManager
 from core.database_manager import DatabaseManager
-from core.command_manager import CommandManager
+from core.enhanced_command_manager import EnhancedCommandManager
+from core.settings_manager import SettingsManager
+from core.action_engine import ActionEngine
 from core.plugin_manager import PluginManager
 from core.voice_manager import VoiceManager
 from core.stt.voice_listener import VoiceListener
-from gui.main_window import MainWindow
+from gui.windows.main_window import FuturisticMainWindow
 from models.event import Event, EventType
 from utils.logger import logger
 
@@ -17,10 +19,13 @@ class JarvisApp:
     def __init__(self):
         self.config_manager = ConfigManager()
         self.db_manager = DatabaseManager(self.config_manager.get("db_path"))
-        self.command_manager = CommandManager()
+        self.settings_manager = SettingsManager(self.db_manager, self.config_manager.config)
+        self.action_engine = ActionEngine(event_bus)
+        self.command_manager = EnhancedCommandManager(self.db_manager, self.action_engine)
         self.event_bus = event_bus
         self.voice_manager = VoiceManager(self.event_bus, self.config_manager.get("voice_name"))
         self.voice_listener = VoiceListener(self.event_bus, self.config_manager.config)
+        self.voice_listener.main_loop = None # Will be set in run_async_tasks
         self.plugin_manager = PluginManager(
             self.config_manager.get("plugin_dir"),
             self.event_bus,
@@ -28,7 +33,12 @@ class JarvisApp:
         )
 
         self.qt_app = QApplication(sys.argv)
-        self.window = MainWindow(self.event_bus)
+        self.window = FuturisticMainWindow(
+            self.event_bus,
+            self.db_manager,
+            self.command_manager,
+            self.settings_manager
+        )
 
         self._setup_event_handlers()
 
@@ -39,11 +49,13 @@ class JarvisApp:
         self.event_bus.subscribe(EventType.COMMAND_DETECTED, self._on_command_detected)
 
     async def _on_voice_start(self, event: Event):
-        self.window.signals.status_changed.emit("Speaking...")
+        self.window.signals.status_changed.emit("SPEAKING")
+        self.window.signals.listening_started.emit()
         self.window.signals.update_log.emit(f"JARVIS: {event.data.get('text')}")
 
     async def _on_voice_end(self, event: Event):
-        self.window.signals.status_changed.emit("Listening/Idle")
+        self.window.signals.status_changed.emit("SYSTEM IDLE")
+        self.window.signals.listening_stopped.emit()
 
     async def _on_voice_request(self, event: Event):
         text = event.data.get("text")
@@ -56,6 +68,9 @@ class JarvisApp:
         await self.command_manager.execute_command(command_text)
 
     async def run_async_tasks(self):
+        # Provide the running loop to the voice listener
+        self.voice_listener.main_loop = asyncio.get_running_loop()
+
         # Load plugins
         self.plugin_manager.load_plugins()
 
