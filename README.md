@@ -63,6 +63,22 @@ class MyPlugin:
 - pyaudio
 - sqlite3 (built-in)
 
+### Automated Setup (Recommended for Windows)
+
+1.  Double-click `install.bat`. This will create a virtual environment and install all dependencies.
+2.  Double-click `run.bat` to launch the application.
+
+### Manual Setup
+
 ```bash
-pip install PyQt6 edge-tts pygame vosk pyaudio
+# Create venv
+python -m venv venv
+source venv/bin/activate  # or venv\Scripts\activate on Windows
+
+# Install dependencies
+pip install -r requirements.txt
 ```
+
+### Note on STT Models
+JARVIS requires a Vosk model to be present in the `models/` directory. By default, it looks for `vosk-model-small-ru-0.22`.
+You can download models from [alphacephei.com/vosk/models](https://alphacephei.com/vosk/models).
