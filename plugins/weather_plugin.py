@@ -29,7 +29,7 @@ class WeatherPlugin:
 
         # We can emit an event that VoiceManager or MainApp handles
         await self.event_bus.emit(Event(
-            EventType.VOICE_START,
+            EventType.VOICE_REQUEST,
             {"text": response},
             "WeatherPlugin"
         ))

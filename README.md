@@ -59,8 +59,10 @@ class MyPlugin:
 - PyQt6
 - edge-tts
 - pygame (for audio playback)
+- vosk
+- pyaudio
 - sqlite3 (built-in)
 
 ```bash
-pip install PyQt6 edge-tts pygame
+pip install PyQt6 edge-tts pygame vosk pyaudio
 ```

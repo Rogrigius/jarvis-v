@@ -3,6 +3,7 @@ from typing import Any, Dict, Optional
 from enum import Enum, auto
 
 class EventType(Enum):
+    VOICE_REQUEST = auto()
     VOICE_START = auto()
     VOICE_END = auto()
     COMMAND_DETECTED = auto()

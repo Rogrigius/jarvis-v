@@ -8,6 +8,7 @@ from core.database_manager import DatabaseManager
 from core.command_manager import CommandManager
 from core.plugin_manager import PluginManager
 from core.voice_manager import VoiceManager
+from core.stt.voice_listener import VoiceListener
 from gui.main_window import MainWindow
 from models.event import Event, EventType
 from utils.logger import logger
@@ -19,6 +20,7 @@ class JarvisApp:
         self.command_manager = CommandManager()
         self.event_bus = event_bus
         self.voice_manager = VoiceManager(self.event_bus, self.config_manager.get("voice_name"))
+        self.voice_listener = VoiceListener(self.event_bus, self.config_manager.config)
         self.plugin_manager = PluginManager(
             self.config_manager.get("plugin_dir"),
             self.event_bus,
@@ -31,6 +33,7 @@ class JarvisApp:
         self._setup_event_handlers()
 
     def _setup_event_handlers(self):
+        self.event_bus.subscribe(EventType.VOICE_REQUEST, self._on_voice_request)
         self.event_bus.subscribe(EventType.VOICE_START, self._on_voice_start)
         self.event_bus.subscribe(EventType.VOICE_END, self._on_voice_end)
         self.event_bus.subscribe(EventType.COMMAND_DETECTED, self._on_command_detected)
@@ -41,6 +44,11 @@ class JarvisApp:
 
     async def _on_voice_end(self, event: Event):
         self.window.signals.status_changed.emit("Listening/Idle")
+
+    async def _on_voice_request(self, event: Event):
+        text = event.data.get("text")
+        if text:
+            await self.voice_manager.speak(text)
 
     async def _on_command_detected(self, event: Event):
         command_text = event.data.get("text")
@@ -54,8 +62,8 @@ class JarvisApp:
         # Initial greeting
         await self.voice_manager.speak("System initialized. I am ready to assist you.")
 
-        # Start voice listening (this would typically be a background loop)
-        await self.voice_manager.start_listening()
+        # Start voice listening
+        self.voice_listener.start()
 
         # Keep the async loop running
         while True:

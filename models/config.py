@@ -2,7 +2,7 @@
 Configuration model for the JARVIS application.
 """
 from dataclasses import dataclass, field
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 @dataclass
 class AppConfig:
@@ -24,7 +24,10 @@ class AppConfig:
     version: str = "1.0.0"
     language: str = "en-US"
     voice_name: str = "en-US-GuyNeural"
-    stt_model_path: str = "models/vosk-model-small-en-us-0.15"
+    stt_model_path: str = "models/vosk-model-small-ru-0.22"
+    stt_sample_rate: int = 16000
+    stt_chunk_size: int = 4000
+    stt_wake_words: List[str] = field(default_factory=lambda: ["джарвис", "jarvis"])
     db_path: str = "database/jarvis.db"
     plugin_dir: str = "plugins"
     command_prefix: str = "/"
