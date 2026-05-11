@@ -2,7 +2,7 @@
 Custom widgets for the JARVIS HUD interface.
 """
 from PyQt6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QFrame
-from PyQt6.QtCore import Qt, QPropertyAnimation, pyqtProperty, QEasingCurve, QRect
+from PyQt6.QtCore import Qt, QPropertyAnimation, pyqtProperty, QEasingCurve, QRect, QPointF
 from PyQt6.QtGui import QPainter, QColor, QPen, QRadialGradient
 
 class VoiceVisualizer(QWidget):
@@ -61,7 +61,7 @@ class VoiceVisualizer(QWidget):
             painter.drawEllipse(center, radius, radius)
 
             # Glow effect
-            gradient = QRadialGradient(center, 80)
+            gradient = QRadialGradient(QPointF(center), 80.0)
             gradient.setColorAt(0, QColor(0, 242, 255, 50))
             gradient.setColorAt(1, QColor(0, 242, 255, 0))
             painter.setBrush(gradient)
