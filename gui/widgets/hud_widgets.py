@@ -57,7 +57,8 @@ class VoiceVisualizer(QWidget):
             alpha = 150 - (self._pulse_radius * 1.5)
             pen.setColor(QColor(0, 242, 255, int(alpha)))
             painter.setPen(pen)
-            painter.drawEllipse(center, 50 + (self._pulse_radius / 2), 50 + (self._pulse_radius / 2))
+            radius = 50 + int(self._pulse_radius / 2)
+            painter.drawEllipse(center, radius, radius)
 
             # Glow effect
             gradient = QRadialGradient(center, 80)
