@@ -49,12 +49,12 @@ class JarvisApp:
         self.event_bus.subscribe(EventType.COMMAND_DETECTED, self._on_command_detected)
 
     async def _on_voice_start(self, event: Event):
-        self.window.signals.status_changed.emit("SPEAKING")
+        self.window.signals.status_changed.emit("ГОВОРИТ")
         self.window.signals.listening_started.emit()
-        self.window.signals.update_log.emit(f"JARVIS: {event.data.get('text')}")
+        self.window.signals.update_log.emit(f"ДЖАРВИС: {event.data.get('text')}")
 
     async def _on_voice_end(self, event: Event):
-        self.window.signals.status_changed.emit("SYSTEM IDLE")
+        self.window.signals.status_changed.emit("ОЖИДАНИЕ")
         self.window.signals.listening_stopped.emit()
 
     async def _on_voice_request(self, event: Event):
@@ -64,7 +64,7 @@ class JarvisApp:
 
     async def _on_command_detected(self, event: Event):
         command_text = event.data.get("text")
-        self.window.signals.update_log.emit(f"User: {command_text}")
+        self.window.signals.update_log.emit(f"Пользователь: {command_text}")
         await self.command_manager.execute_command(command_text)
 
     async def run_async_tasks(self):
@@ -75,7 +75,7 @@ class JarvisApp:
         self.plugin_manager.load_plugins()
 
         # Initial greeting
-        await self.voice_manager.speak("System initialized. I am ready to assist you.")
+        await self.voice_manager.speak("Система инициализирована. Я готов к работе.")
 
         # Start voice listening
         self.voice_listener.start()

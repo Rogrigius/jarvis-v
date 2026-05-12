@@ -20,10 +20,10 @@ class AppConfig:
         command_prefix: Prefix for text-based commands.
         settings: Additional dynamic settings.
     """
-    name: str = "JARVIS"
+    name: str = "ДЖАРВИС"
     version: str = "1.0.0"
-    language: str = "en-US"
-    voice_name: str = "en-US-GuyNeural"
+    language: str = "ru-RU"
+    voice_name: str = "ru-RU-SvetlanaNeural"
     stt_model_path: str = "models/vosk-model-small-ru-0.22"
     stt_sample_rate: int = 16000
     stt_chunk_size: int = 4000

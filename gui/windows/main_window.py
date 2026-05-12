@@ -51,10 +51,10 @@ class FuturisticMainWindow(QMainWindow):
         self.sidebar_layout = QVBoxLayout(self.sidebar)
         self.sidebar_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        self.home_btn = self.create_nav_button("HUD", True)
-        self.editor_btn = self.create_nav_button("CMD")
-        self.logs_btn = self.create_nav_button("LOG")
-        self.settings_btn = self.create_nav_button("SET")
+        self.home_btn = self.create_nav_button("ГЛАВНАЯ", True)
+        self.editor_btn = self.create_nav_button("КОМАНДЫ")
+        self.logs_btn = self.create_nav_button("ЛОГИ")
+        self.settings_btn = self.create_nav_button("НАСТРОЙКИ")
 
         self.sidebar_layout.addWidget(self.home_btn)
         self.sidebar_layout.addWidget(self.editor_btn)
@@ -71,7 +71,7 @@ class FuturisticMainWindow(QMainWindow):
         self.hud_page = QWidget()
         self.hud_layout = QVBoxLayout(self.hud_page)
 
-        self.status_label = QLabel("SYSTEM IDLE")
+        self.status_label = QLabel("СИСТЕМА ГОТОВА")
         self.status_label.setObjectName("StatusLabel")
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -88,7 +88,7 @@ class FuturisticMainWindow(QMainWindow):
         self.log_view = QTextEdit()
         self.log_view.setObjectName("LogView")
         self.log_view.setReadOnly(True)
-        self.logs_layout.addWidget(QLabel("SYSTEM LOGS"))
+        self.logs_layout.addWidget(QLabel("СИСТЕМНЫЙ ЖУРНАЛ"))
         self.logs_layout.addWidget(self.log_view)
 
         # Editor Page
@@ -148,8 +148,8 @@ class FuturisticMainWindow(QMainWindow):
         # self.tray_icon.setIcon(QIcon("gui/resources/jarvis.png"))
 
         tray_menu = QMenu()
-        show_action = QAction("OPEN INTERFACE", self)
-        quit_action = QAction("TERMINATE", self)
+        show_action = QAction("ОТКРЫТЬ ИНТЕРФЕЙС", self)
+        quit_action = QAction("ЗАВЕРШИТЬ РАБОТУ", self)
 
         show_action.triggered.connect(self.show)
         quit_action.triggered.connect(sys.exit)

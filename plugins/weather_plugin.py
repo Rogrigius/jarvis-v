@@ -7,27 +7,24 @@ class WeatherPlugin:
         self.event_bus = event_bus
         self.command_manager = command_manager
 
-        # Register a command
+        # Регистрация команды
         weather_cmd = Command(
-            name="Weather",
-            description="Get the current weather",
-            keywords=["weather", "temperature", "forecast"],
+            name="Погода",
+            description="Узнать текущую погоду",
+            keywords=["погода", "температура", "прогноз"],
             callback=self.get_weather,
             is_async=True
         )
         self.command_manager.register_command(weather_cmd)
-        logger.info("Weather Plugin initialized")
+        logger.info("Weather Plugin initialized in Russian")
 
     async def get_weather(self, text: str):
-        # In a real plugin, you'd call an API here
-        response = "The weather today is sunny with a high of 75 degrees."
+        # В реальном плагине здесь был бы вызов API
+        response = "Сегодня солнечно, температура около двадцати пяти градусов тепла."
 
-        # Emit a voice event to speak the result
-        # Note: In a real app, you might want to access VoiceManager via event_bus or a registry
-        # For simplicity in this demo, we can just log or emit a specific event
+        # Отправка события для озвучивания ответа
         logger.info(f"Weather Plugin Response: {response}")
 
-        # We can emit an event that VoiceManager or MainApp handles
         await self.event_bus.emit(Event(
             EventType.VOICE_REQUEST,
             {"text": response},
