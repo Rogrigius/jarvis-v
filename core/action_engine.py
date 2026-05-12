@@ -5,6 +5,8 @@ import subprocess
 import webbrowser
 import os
 import asyncio
+import keyboard
+import pygame
 from typing import List
 from models.custom_command import Action, ActionType
 from models.event import Event, EventType
@@ -50,8 +52,18 @@ class ActionEngine:
 
             elif action.type == ActionType.PLAY_AUDIO:
                 file_path = action.params.get("path")
-                # Implementation would call an audio player utility
-                pass
+                if file_path and os.path.exists(file_path):
+                    if not pygame.mixer.get_init():
+                        pygame.mixer.init()
+                    pygame.mixer.music.load(file_path)
+                    pygame.mixer.music.play()
+                    while pygame.mixer.music.get_busy():
+                        await asyncio.sleep(0.1)
+
+            elif action.type == ActionType.PRESS_KEYS:
+                keys = action.params.get("keys")
+                if keys:
+                    keyboard.press_and_release(keys)
 
         except Exception as e:
             logger.error(f"Action execution error ({action.type}): {e}")
