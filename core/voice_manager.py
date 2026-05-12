@@ -15,10 +15,17 @@ class VoiceManager:
     Manages speech synthesis (TTS) and voice recognition (STT).
     Uses Edge-TTS for high-quality voice synthesis.
     """
-    def __init__(self, event_bus, voice_name: str = "en-US-GuyNeural"):
+    def __init__(self, event_bus, voice_name: str = "en-US-GuyNeural", device_name: Optional[str] = None):
         self.event_bus = event_bus
         self.voice_name = voice_name
-        pygame.mixer.init()
+        try:
+            if device_name:
+                pygame.mixer.init(devicename=device_name)
+            else:
+                pygame.mixer.init()
+        except Exception as e:
+            logger.error(f"Failed to initialize pygame mixer with device {device_name}: {e}")
+            pygame.mixer.init()
 
     async def speak(self, text: str):
         """

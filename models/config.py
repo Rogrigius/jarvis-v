@@ -28,6 +28,12 @@ class AppConfig:
     stt_sample_rate: int = 16000
     stt_chunk_size: int = 4000
     stt_wake_words: List[str] = field(default_factory=lambda: ["джарвис", "jarvis"])
+    input_device_index: Optional[int] = None
+    output_device_name: Optional[str] = None
+    hotkeys: Dict[str, str] = field(default_factory=lambda: {
+        "activate": "ctrl+alt+j",
+        "stop_tts": "ctrl+alt+s"
+    })
     db_path: str = "database/jarvis.db"
     plugin_dir: str = "plugins"
     command_prefix: str = "/"

@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QComboBox, QSlider,
                              QScrollArea, QGroupBox, QFormLayout)
 from PyQt6.QtCore import Qt
+from utils.audio_utils import get_audio_devices
 
 class SettingsWindow(QWidget):
     """
@@ -18,6 +19,8 @@ class SettingsWindow(QWidget):
     def init_ui(self):
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(20, 20, 20, 20)
+
+        devices = get_audio_devices()
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -38,12 +41,53 @@ class SettingsWindow(QWidget):
         # Настройки распознавания
         stt_group = QGroupBox("РАСПОЗНАВАНИЕ РЕЧИ (STT)")
         stt_form = QFormLayout()
+
+        self.input_device = QComboBox()
+        for dev in devices["inputs"]:
+            self.input_device.addItem(dev["name"], dev["index"])
+
+        current_input = self.settings_manager.get("input_device_index")
+        if current_input is not None:
+            idx = self.input_device.findData(current_input)
+            if idx >= 0: self.input_device.setCurrentIndex(idx)
+
+        stt_form.addRow("Микрофон:", self.input_device)
+
         self.wake_words = QLineEdit(", ".join(self.settings_manager.get("stt_wake_words")))
         stt_form.addRow("Слова активации:", self.wake_words)
         self.model_path = QLineEdit(self.settings_manager.get("stt_model_path"))
         stt_form.addRow("Путь к модели (Vosk):", self.model_path)
         stt_group.setLayout(stt_form)
         form.addRow(stt_group)
+
+        # Настройки вывода
+        output_group = QGroupBox("УСТРОЙСТВА ВЫВОДА")
+        output_form = QFormLayout()
+
+        self.output_device = QComboBox()
+        self.output_device.addItem("Системный по умолчанию", None)
+        for dev in devices["outputs"]:
+            self.output_device.addItem(dev["name"], dev["name"])
+
+        current_output = self.settings_manager.get("output_device_name")
+        if current_output:
+            idx = self.output_device.findData(current_output)
+            if idx >= 0: self.output_device.setCurrentIndex(idx)
+
+        output_form.addRow("Динамики:", self.output_device)
+        output_group.setLayout(output_form)
+        form.addRow(output_group)
+
+        # Горячие клавиши
+        hk_group = QGroupBox("ГОРЯЧИЕ КЛАВИШИ")
+        hk_form = QFormLayout()
+        hotkeys = self.settings_manager.get("hotkeys", {})
+        self.hk_activate = QLineEdit(hotkeys.get("activate", ""))
+        self.hk_stop = QLineEdit(hotkeys.get("stop_tts", ""))
+        hk_form.addRow("Активация (Wake):", self.hk_activate)
+        hk_form.addRow("Остановить речь:", self.hk_stop)
+        hk_group.setLayout(hk_form)
+        form.addRow(hk_group)
 
         # Общие системные настройки
         gen_group = QGroupBox("ОБЩИЕ СИСТЕМНЫЕ НАСТРОЙКИ")
@@ -66,6 +110,15 @@ class SettingsWindow(QWidget):
         self.settings_manager.set("stt_wake_words", [w.strip() for w in self.wake_words.text().split(",") if w.strip()])
         self.settings_manager.set("stt_model_path", self.model_path.text().strip())
         self.settings_manager.set("name", self.app_name.text().strip())
+
+        self.settings_manager.set("input_device_index", self.input_device.currentData())
+        self.settings_manager.set("output_device_name", self.output_device.currentData())
+
+        hotkeys = {
+            "activate": self.hk_activate.text().strip(),
+            "stop_tts": self.hk_stop.text().strip()
+        }
+        self.settings_manager.set("hotkeys", hotkeys)
 
         from PyQt6.QtWidgets import QMessageBox
         QMessageBox.information(self, "Успех", "Настройки сохранены и применены.")

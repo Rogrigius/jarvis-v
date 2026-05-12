@@ -12,9 +12,10 @@ class AudioStreamManager:
     """
     Manages the microphone stream and provides chunks of audio data.
     """
-    def __init__(self, sample_rate: int = 16000, chunk_size: int = 4000):
+    def __init__(self, sample_rate: int = 16000, chunk_size: int = 4000, device_index: Optional[int] = None):
         self.sample_rate = sample_rate
         self.chunk_size = chunk_size
+        self.device_index = device_index
         self.audio_queue = queue.Queue()
         self._pyaudio = pyaudio.PyAudio()
         self._stream: Optional[pyaudio.Stream] = None
@@ -57,6 +58,7 @@ class AudioStreamManager:
                     channels=1,
                     rate=self.sample_rate,
                     input=True,
+                    input_device_index=self.device_index,
                     frames_per_buffer=self.chunk_size,
                     stream_callback=self._callback
                 )

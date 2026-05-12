@@ -20,7 +20,8 @@ class VoiceListener:
 
         self.audio_manager = AudioStreamManager(
             sample_rate=config.stt_sample_rate,
-            chunk_size=config.stt_chunk_size
+            chunk_size=config.stt_chunk_size,
+            device_index=config.input_device_index
         )
         self.recognizer = SpeechRecognizer(
             model_path=config.stt_model_path,

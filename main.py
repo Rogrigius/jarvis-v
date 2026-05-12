@@ -8,6 +8,7 @@ from core.database_manager import DatabaseManager
 from core.enhanced_command_manager import EnhancedCommandManager
 from core.settings_manager import SettingsManager
 from core.action_engine import ActionEngine
+from core.hotkey_manager import HotkeyManager
 from core.plugin_manager import PluginManager
 from core.voice_manager import VoiceManager
 from core.stt.voice_listener import VoiceListener
@@ -23,7 +24,12 @@ class JarvisApp:
         self.action_engine = ActionEngine(event_bus)
         self.command_manager = EnhancedCommandManager(self.db_manager, self.action_engine)
         self.event_bus = event_bus
-        self.voice_manager = VoiceManager(self.event_bus, self.config_manager.get("voice_name"))
+        self.hotkey_manager = HotkeyManager(self.event_bus)
+        self.voice_manager = VoiceManager(
+            self.event_bus,
+            self.config_manager.get("voice_name"),
+            self.config_manager.get("output_device_name")
+        )
         self.voice_listener = VoiceListener(self.event_bus, self.config_manager.config)
         self.voice_listener.main_loop = None # Will be set in run_async_tasks
         self.plugin_manager = PluginManager(
@@ -68,8 +74,15 @@ class JarvisApp:
         await self.command_manager.execute_command(command_text)
 
     async def run_async_tasks(self):
-        # Provide the running loop to the voice listener
-        self.voice_listener.main_loop = asyncio.get_running_loop()
+        # Provide the running loop to managers
+        loop = asyncio.get_running_loop()
+        self.voice_listener.main_loop = loop
+
+        # Initialize hotkeys
+        self.hotkey_manager.setup_hotkeys(
+            self.settings_manager.get("hotkeys", {}),
+            loop
+        )
 
         # Load plugins
         self.plugin_manager.load_plugins()
